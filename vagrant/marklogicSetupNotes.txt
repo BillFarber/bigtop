@@ -5,7 +5,7 @@
 
 	# MarkLogic
     sudo yum -y install redhat-lsb glibc gdb cyrus-sasl-lib glibc.i686 gdb.x86_64 redhat-lsb.x86_64
-    sudo rpm -i /vagrant/resources/MarkLogic-9.0-20170113.x86_64-EA4.rpm
+    sudo rpm -i /vagrant/resources/large/MarkLogic-9.0-20170113.x86_64-EA4.rpm
     sudo service MarkLogic start
 	/vagrant/resources/marklogic/initialize-ml.sh -u admin -p admin
 
