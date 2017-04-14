@@ -47,7 +47,7 @@ public class MarkLogicClientFactory {
 		InputStream input = null;
 		
 		try {
-			input = ResourceHelper.getResourceAsStream("marklogic.properties");
+			input = getResourceAsStream("marklogic.properties");
 			properties.load(input);
 			// get the property value and print it out
 		    ML_HOST = properties.getProperty("host");
@@ -69,4 +69,13 @@ public class MarkLogicClientFactory {
 		}
 		return success;
 	}
+
+    public static InputStream getResourceAsStream( String resource ) {
+      final InputStream in = getContextClassLoader().getResourceAsStream( resource );
+      return in == null ? getResourceAsStream( resource ) : in;
+    }
+
+    private static ClassLoader getContextClassLoader() {
+      return Thread.currentThread().getContextClassLoader();
+    }
 }
