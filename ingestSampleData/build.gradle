@@ -1,0 +1,37 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+
+jar {
+    baseName = 'ingestSampleData'
+    version =  '0.1.0'
+}
+task fatJar(type: Jar) {
+	manifest {
+    	attributes 'Main-Class': 'com.markLogic.bigTop.jackson.LoadSampleData'
+	}
+    baseName = 'ingestSampleDataFat'
+    version =  '0.1.0'
+	from { configurations.compile.collect { it.isDirectory() ? is : zipTree(it) } } 
+	with jar
+ }
+
+repositories {
+    mavenCentral()
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+// tag::security[]
+dependencies {
+    compile group: 'com.marklogic', name: 'java-client-api', version: '3.0.7'
+}
+// end::security[]
+
