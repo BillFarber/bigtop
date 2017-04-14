@@ -1,0 +1,14 @@
+{
+  "external-security-name": "BigTop-LDAP-security",
+  "description": "Connection to freeipa.bigtop.local",
+  "authentication": "ldap",
+  "cache-timeout": "1",
+  "authorization": "ldap",
+  "ldap-server-uri": "ldap://freeipa.bigtop.local:389/",
+  "ldap-base": "cn=users,cn=accounts,dc=bigtop,dc=local",
+  "ldap-attribute": "uid",
+  "ldap-default-user": "uid=admin,cn=users,cn=accounts,dc=bigtop,dc=local",
+  "ldap-password": "december",
+  "ldap-bind-method": "simple",
+  "ssl-require-client-certificate": "false"
+}
