@@ -1,0 +1,37 @@
+	sudo yum -y install ipa-client
+    sudo ipa-client-install --mkhomedir
+    kinit admin
+    klist
+
+	# MarkLogic
+    sudo yum -y install redhat-lsb glibc gdb cyrus-sasl-lib glibc.i686 gdb.x86_64 redhat-lsb.x86_64
+    sudo rpm -i /vagrant/resources/MarkLogic-9.0-20170113.x86_64-EA4.rpm
+    sudo service MarkLogic start
+	/vagrant/resources/marklogic/initialize-ml.sh -u admin -p admin
+
+	# Tomcat
+	sudo yum -y install java-1.8.0-openjdk.x86_64
+	sudo mkdir /opt/tomcat
+	sudo groupadd tomcat
+	sudo useradd -s /bin/nologin -g tomcat -d /opt/tomcat tomcat
+	sudo tar -zxvf /vagrant/resources/apache-tomcat-8.5.12.tar.gz -C /opt/tomcat --strip-components=1
+	cd /opt/tomcat
+	sudo chgrp -R tomcat /opt/tomcat
+	sudo chmod -R g+r conf
+	sudo chmod g+x conf
+	sudo chown -R tomcat webapps/ work/ temp/ logs/
+	sudo cp /vagrant/resources/tomcat.service /etc/systemd/system/tomcat.service
+	sudo systemctl start tomcat
+	http://marktom.bigtop.local:8080/
+	sudo vi /opt/tomcat/conf/tomcat-users.xml
+<user username="admin" password="december" roles="manager-gui,admin-gui"/>
+	sudo vi /opt/tomcat/webapps/manager/META-INF/context.xml
+	sudo vi /opt/tomcat/webapps/host-manager/META-INF/context.xml
+	sudo systemctl restart tomcat
+ 	http://marktom.bigtop.local:8080/manager/html
+ 
+ 	# Configure MarkLogic for BigTop
+ 	/vagrant/resources/marklogic/mlBigtopConfigure.sh -u admin -p admin
+ 	
+ 	# Wipe out MarkLogic BigTop configuration
+ 	/vagrant/resources/marklogic/mlBigtopWipe.sh -u admin -p admin

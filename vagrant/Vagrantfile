@@ -1,0 +1,46 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure(2) do |config|
+
+  config.vm.box = "minimal/centos7"
+
+  config.vm.synced_folder ".", "/vagrant", disabled: false
+
+  config.vm.provider :libvirt do |libvirt|
+    libvirt.memory = 1024
+  end
+
+  # Vagrant's "change host name" sets the short host name.  Before
+  # we repair /etc/hosts (see below) let's reset /etc/hostname to
+  # the *full* host name
+  #
+  config.vm.provision "shell",
+    inline: "hostname --fqdn > /etc/hostname && hostname -F /etc/hostname"
+
+  # Vagrant's "change host name" capability for Fedora maps hostname
+  # to loopback.  We must repair /etc/hosts
+  #
+  config.vm.provision "shell",
+    inline: "sed -ri 's/127\.0\.0\.1\s.*/127.0.0.1 localhost localhost.localdomain/' /etc/hosts"
+
+  config.vm.define "freeipa" do |freeipa|
+    freeipa.vm.network "private_network", ip: "192.168.35.10"
+    freeipa.vm.hostname = "freeipa.bigtop.local"
+  end
+
+  config.vm.define "marktom" do |marktom|
+    marktom.vm.network "private_network", ip: "192.168.35.20"
+    marktom.vm.hostname = "marktom.bigtop.local"
+    marktom.vm.provision "shell",
+      inline: 'echo "nameserver 192.168.34.10" > /etc/resolv.conf'
+  end
+
+  config.vm.define "client" do |client|
+    client.vm.network "private_network", ip: "192.168.35.30"
+    client.vm.hostname = "client.bigtop.local"
+    client.vm.provision "shell",
+      inline: 'echo "nameserver 192.168.34.10" > /etc/resolv.conf'
+  end
+
+end

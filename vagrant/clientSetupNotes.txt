@@ -1,0 +1,7 @@
+      sudo yum -y install ipa-client
+      sudo ipa-client-install --mkhomedir
+      kinit admin
+      klist
+
+      sudo yum -y groupinstall "GNOME Desktop" -y
+      startx

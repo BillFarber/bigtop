@@ -1,0 +1,38 @@
+    sudo yum -y install ipa-server ipa-server-dns
+    sudo ipa-server-install --no-host-dns --mkhomedir
+yes
+<enter>
+<enter>
+<enter>
+december
+december
+december
+december
+no
+<enter>
+<enter>
+<enter>
+<enter>
+<enter>
+yes
+
+
+    kinit admin
+    klist
+    http://freeipa.bigtop.local/
+
+	# Useful FreeIPA
+	sudo ipactl stop
+# !!	sudo /var/lib/dirsrv/scripts-BIGTOP-LOCAL/ldif2db -i /vagrant/resources/bigtop.ldif  -n userRoot
+	sudo ipactl start
+
+    # Useful LDAP
+    ldapsearch -H ldaps://freeipa.bigtop.local -w december -D "uid=admin,cn=users,cn=accounts,dc=bigtop,dc=local" -b "cn=users,cn=accounts,dc=bigtop,dc=local"
+    ldapsearch -h freeipa.bigtop.local -p 389 -x -b "" -s base -LLL supportedSASLMechanisms
+    ldapsearch -h freeipa.bigtop.local -w december -D "uid=admin,cn=users,cn=accounts,dc=bigtop,dc=local" -b "cn=groups,cn=accounts,dc=bigtop,dc=local"
+
+	# Export LDAP
+    /var/lib/dirsrv/scripts-BIGTOP-LOCAL/db2ldif -n userRoot -a bigtop.ldif
+      
+    # Import LDAP
+    /var/lib/dirsrv/scripts-BIGTOP-LOCAL/ldif2db -i /var/lib/dirsrv/slapd-BIGTOP-LOCAL/ldif/bigtop.ldif  -n userRoot
