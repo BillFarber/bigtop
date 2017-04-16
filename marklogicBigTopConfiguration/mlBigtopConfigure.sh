@@ -148,13 +148,13 @@ echo "Create BigTopUsersRole response: $CREATE_ROLE_REPLY"
 
 echo "Create BigTopReaderRole_red to give users the rest-reader execute privilege and access"
 CREATE_ROLE_REPLY=`$AUTH_CURL -X POST -H "Content-Type:application/json" \
-	-d '{"role-name":"BigTopReaderRole_red", "external-name":["cn=bigtopreaderagroup,cn=groups,cn=accounts,dc=bigtop,dc=local"]}' \
+	-d '{"role-name":"BigTopReaderRole_red", "external-name":["cn=bigtopreaderredgroup,cn=groups,cn=accounts,dc=bigtop,dc=local"]}' \
 	http://$ML_HOST:8002/manage/v2/roles`
 echo "Create BigTopReaderRole_red response: $CREATE_ROLE_REPLY"
 
 echo "Create BigTopReaderRole_blue to give users the rest-reader execute privilege and access"
 CREATE_ROLE_REPLY=`$AUTH_CURL -X POST -H "Content-Type:application/json" \
-	-d '{"role-name":"BigTopReaderRole_blue", "external-name":["cn=bigtopreaderbgroup,cn=groups,cn=accounts,dc=bigtop,dc=local"]}' \
+	-d '{"role-name":"BigTopReaderRole_blue", "external-name":["cn=bigtopreaderbluegroup,cn=groups,cn=accounts,dc=bigtop,dc=local"]}' \
 	http://$ML_HOST:8002/manage/v2/roles`
 echo "Create BigTopReaderRole_blue response: $CREATE_ROLE_REPLY"
 
