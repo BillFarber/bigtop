@@ -23,7 +23,6 @@ yes
 
 	# Useful FreeIPA
 	sudo ipactl stop
-# !!	sudo /var/lib/dirsrv/scripts-BIGTOP-LOCAL/ldif2db -i /vagrant/resources/bigtop.ldif  -n userRoot
 	sudo ipactl start
 
     # Useful LDAP
