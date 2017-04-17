@@ -29,7 +29,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			.authorizeRequests()
 				.anyRequest().fullyAuthenticated()
 				.and()
-			.formLogin();
+			.formLogin().defaultSuccessUrl("/");
 	}
 
 	@Override

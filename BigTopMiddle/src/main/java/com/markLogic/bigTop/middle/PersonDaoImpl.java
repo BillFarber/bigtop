@@ -15,6 +15,15 @@
  */
 package com.markLogic.bigTop.middle;
 
+import static org.springframework.ldap.query.LdapQueryBuilder.query;
+
+import java.util.List;
+
+import javax.naming.Name;
+import javax.naming.NamingException;
+import javax.naming.directory.Attributes;
+import javax.naming.ldap.LdapName;
+
 import org.springframework.ldap.core.AttributesMapper;
 import org.springframework.ldap.core.ContextMapper;
 import org.springframework.ldap.core.DirContextAdapter;
@@ -22,15 +31,6 @@ import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.core.support.AbstractContextMapper;
 import org.springframework.ldap.support.LdapNameBuilder;
-import org.springframework.ldap.support.LdapUtils;
-
-import javax.naming.Name;
-import javax.naming.NamingException;
-import javax.naming.directory.Attributes;
-import javax.naming.ldap.LdapName;
-import java.util.List;
-
-import static org.springframework.ldap.query.LdapQueryBuilder.query;
 
 /**
  * Default implementation of PersonDao. This implementation uses
@@ -92,20 +92,20 @@ public class PersonDaoImpl implements PersonDao {
 	}
 
     @Override
-	public Person findByPrimaryKey(String country, String company, String fullname) {
-		LdapName dn = buildDn(country, company, fullname);
+	public Person findByPrimaryKey(String uid) {
+		LdapName dn = buildDn(uid);
 		return ldapTemplate.lookup(dn, PERSON_CONTEXT_MAPPER);
 	}
 
 	private LdapName buildDn(Person person) {
-		return buildDn(person.getCountry(), person.getCompany(), person.getFullName());
+		return buildDn(person.getUid());
 	}
 
-	private LdapName buildDn(String country, String company, String fullname) {
+	private LdapName buildDn(String uid) {
         return LdapNameBuilder.newInstance()
-                .add("c", country)
-                .add("ou", company)
-                .add("cn", fullname)
+                .add("cn", "accounts")
+                .add("cn", "users")
+                .add("uid", uid)
                 .build();
 	}
 
@@ -113,8 +113,6 @@ public class PersonDaoImpl implements PersonDao {
 		context.setAttributeValues("objectclass", new String[] { "top", "person" });
 		context.setAttributeValue("cn", person.getFullName());
 		context.setAttributeValue("sn", person.getLastName());
-		context.setAttributeValue("description", person.getDescription());
-		context.setAttributeValue("telephoneNumber", person.getPhone());
 	}
 
 	/**
@@ -127,15 +125,8 @@ public class PersonDaoImpl implements PersonDao {
         @Override
 		public Person doMapFromContext(DirContextOperations context) {
 			Person person = new Person();
-
-            LdapName dn = LdapUtils.newLdapName(context.getDn());
-			person.setCountry(LdapUtils.getStringValue(dn, 0));
-			person.setCompany(LdapUtils.getStringValue(dn, 1));
 			person.setFullName(context.getStringAttribute("cn"));
 			person.setLastName(context.getStringAttribute("sn"));
-			person.setDescription(context.getStringAttribute("description"));
-			person.setPhone(context.getStringAttribute("telephoneNumber"));
-
 			return person;
 		}
 	};

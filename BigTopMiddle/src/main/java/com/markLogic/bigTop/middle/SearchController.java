@@ -2,8 +2,6 @@ package com.markLogic.bigTop.middle;
 
 import static org.springframework.ldap.query.LdapQueryBuilder.query;
 
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,35 +14,22 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Configuration
-public class HomeController {
+public class SearchController {
 	@Autowired
 	DefaultSpringSecurityContextSource contextSource;
 	
-	private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
+	private static final Logger logger = LoggerFactory.getLogger(SearchController.class);
 
-	@GetMapping("/")
+	@GetMapping("/search")
 	public String index() throws javax.naming.NamingException {
 		String username = SecurityContextHolder.getContext().getAuthentication().getName();
-		String password = (String) SecurityContextHolder.getContext().getAuthentication().getCredentials();
-		logger.info("username: " + username);
-		logger.info("password: " + password);
 
 		LdapTemplate ldapTemplate = new LdapTemplate(contextSource);
 		Person person = getPersonName(ldapTemplate, username);
-
-		PullJsonFromMarkLogic obj = new PullJsonFromMarkLogic(username, password);
-		List<String> resultUris = obj.search("");
-		StringBuilder resultDiv = new StringBuilder("<div>Search Results<ol>");
-		for (String uri : resultUris) {
-			resultDiv.append("<li>"+uri+"</li>");
-		}
-		resultDiv.append("</ol></div>");
-		String head = "<head><title>BigTop Middle</title></head>";
-		String welcome = "<h1>Welcome to the home page " + person.getFullName() + "!</h1>";
+		logger.info("person: " + person);
+		String welcome = "<h1>Welcome to the search page " + person.getFullName() + "!</h1>";
 		String logoutLink = "<div><a href='/logout'>Logout</a></div>";
-		String body = "<body>"+welcome+person.toHtmlDiv()+logoutLink+"</body>";
-
-		return "<html>"+head+body+"</html>";
+		return "<html><head><title>BigTop Middle</title></head><body>"+welcome.toString()+person.toHtmlDiv()+logoutLink+"</body></html>";
 	}
 	
 	public Person getPersonName(LdapTemplate ldapTemplate, String uid) {

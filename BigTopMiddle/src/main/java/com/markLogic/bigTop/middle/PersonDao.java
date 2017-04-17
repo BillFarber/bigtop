@@ -35,5 +35,5 @@ public interface PersonDao {
 
    List<Person> findAll();
 
-   Person findByPrimaryKey(String country, String company, String fullname);
+   Person findByPrimaryKey(String uid);
 }
