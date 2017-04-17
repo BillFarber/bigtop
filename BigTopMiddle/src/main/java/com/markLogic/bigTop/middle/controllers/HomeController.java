@@ -44,8 +44,9 @@ public class HomeController {
 		resultDiv.append("</ol></div>");
 		String head = "<head><title>BigTop Middle</title></head>";
 		String welcome = "<h1>Welcome to the home page " + person.getFullName() + "!</h1>";
+		String searchLink = "<div><a href='/search'>Search Page</a></div>";
 		String logoutLink = "<div><a href='/logout'>Logout</a></div>";
-		String body = "<body>"+welcome+person.toHtmlDiv()+logoutLink+"</body>";
+		String body = "<body>"+welcome+person.toHtmlDiv()+searchLink+logoutLink+"</body>";
 
 		return "<html>"+head+body+"</html>";
 	}
