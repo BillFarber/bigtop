@@ -1,4 +1,4 @@
-package com.markLogic.bigTop.middle;
+package com.markLogic.bigTop.middle.controllers;
 
 import java.io.IOException;
 

@@ -1,4 +1,4 @@
-package com.markLogic.bigTop.middle;
+package com.markLogic.bigTop.middle.marklogicDomain;
 
 import java.util.List;
 

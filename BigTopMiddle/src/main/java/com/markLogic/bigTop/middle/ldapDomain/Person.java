@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.markLogic.bigTop.middle;
+package com.markLogic.bigTop.middle.ldapDomain;
 
 import javax.naming.Name;
 
@@ -44,7 +44,7 @@ import org.springframework.ldap.odm.annotations.Id;
  * 
  */
 @Entry(objectClasses = { "person" })
-public class Person {
+public final class Person {
 	@Id
 	private Name dn;
 

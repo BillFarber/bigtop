@@ -1,4 +1,4 @@
-package com.markLogic.bigTop.middle;
+package com.markLogic.bigTop.middle.controllers;
 
 import static org.springframework.ldap.query.LdapQueryBuilder.query;
 
@@ -11,6 +11,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.ldap.DefaultSpringSecurityContextSource;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.markLogic.bigTop.middle.ldapDomain.Person;
 
 @RestController
 @Configuration
@@ -25,14 +27,14 @@ public class SearchController {
 		String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
 		LdapTemplate ldapTemplate = new LdapTemplate(contextSource);
-		Person person = getPersonName(ldapTemplate, username);
+		Person person = getCurrentUser(ldapTemplate, username);
 		logger.info("person: " + person);
 		String welcome = "<h1>Welcome to the search page " + person.getFullName() + "!</h1>";
 		String logoutLink = "<div><a href='/logout'>Logout</a></div>";
 		return "<html><head><title>BigTop Middle</title></head><body>"+welcome.toString()+person.toHtmlDiv()+logoutLink+"</body></html>";
 	}
 	
-	public Person getPersonName(LdapTemplate ldapTemplate, String uid) {
+	public Person getCurrentUser(LdapTemplate ldapTemplate, String uid) {
 		return ldapTemplate.findOne(query().where("uid").is(uid), Person.class);
 	}
 }
