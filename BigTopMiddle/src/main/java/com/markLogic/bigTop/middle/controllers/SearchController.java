@@ -2,6 +2,8 @@ package com.markLogic.bigTop.middle.controllers;
 
 import static org.springframework.ldap.query.LdapQueryBuilder.query;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.markLogic.bigTop.middle.PullJsonFromMarkLogic;
 import com.markLogic.bigTop.middle.ldapDomain.Person;
 
 @RestController
@@ -24,17 +27,45 @@ public class SearchController {
 	private static final Logger logger = LoggerFactory.getLogger(SearchController.class);
 
 	@GetMapping("/search")
-	public String searchGet(@ModelAttribute("q") String q) throws javax.naming.NamingException {
+	public String search() throws javax.naming.NamingException {
 		String username = SecurityContextHolder.getContext().getAuthentication().getName();
+		LdapTemplate ldapTemplate = new LdapTemplate(contextSource);
+		Person person = getCurrentUser(ldapTemplate, username);
+		logger.info("person: " + person);
+
+		String welcome = "<h1>Welcome to the search page " + person.getFullName() + "!</h1>";
+		String logoutLink = "<div><a href='/logout'>Logout</a></div>";
+		String queryForm = "<div><form method='GET' action='/doSearch'><input type='text' name='q' value=''><input type='submit' value='Submit'></form></div>";
+		return "<html><head><title>BigTop Middle</title></head><body>"+welcome.toString()+person.toHtmlDiv()+queryForm.toString()+logoutLink+"</body></html>";
+	}
+
+	@GetMapping("/doSearch")
+	public String doSearch(@ModelAttribute("q") String q) throws javax.naming.NamingException {
+		String username = SecurityContextHolder.getContext().getAuthentication().getName();
+		String password = (String) SecurityContextHolder.getContext().getAuthentication().getCredentials();
+		if (q == null) {
+			System.out.println("q is null");
+		} else {
+			System.out.println("q: " + q);
+		}
 		logger.info("Search for: " + q);
 
 		LdapTemplate ldapTemplate = new LdapTemplate(contextSource);
 		Person person = getCurrentUser(ldapTemplate, username);
 		logger.info("person: " + person);
+		
+		PullJsonFromMarkLogic obj = new PullJsonFromMarkLogic(username, password);
+		List<String> resultUris = obj.search(q);
+		StringBuilder resultDiv = new StringBuilder("<div><h3>Search Results</h3><ol>");
+		for (String uri : resultUris) {
+			resultDiv.append("<li>"+uri+"</li>");
+		}
+		resultDiv.append("</ol></div>");
+
 		String welcome = "<h1>Welcome to the search page " + person.getFullName() + "!</h1>";
 		String logoutLink = "<div><a href='/logout'>Logout</a></div>";
-		String queryForm = "<div><form method='GET'><input type='text' name='q'><input type='submit' value='Submit'></form></div>";
-		return "<html><head><title>BigTop Middle</title></head><body>"+welcome.toString()+person.toHtmlDiv()+queryForm+logoutLink+"</body></html>";
+		String queryForm = "<div><form method='GET'><input type='text' name='q' value='"+q+"'><input type='submit' value='Submit'></form></div>";
+		return "<html><head><title>BigTop Middle</title></head><body>"+welcome.toString()+person.toHtmlDiv()+queryForm+resultDiv.toString()+logoutLink+"</body></html>";
 	}
 
 	public Person getCurrentUser(LdapTemplate ldapTemplate, String uid) {

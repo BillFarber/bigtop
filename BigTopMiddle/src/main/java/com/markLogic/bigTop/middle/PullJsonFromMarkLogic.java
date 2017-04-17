@@ -72,7 +72,7 @@ public class PullJsonFromMarkLogic {
     public List<String> search(String q) {
         QueryManager queryMgr = client.newQueryManager();
         StringQueryDefinition qd = queryMgr.newStringDefinition();
-        qd.setCriteria("");
+        qd.setCriteria(q);
         SearchHandle sh = new SearchHandle();
 
         SearchHandle searchResults = queryMgr.search(qd, sh);
