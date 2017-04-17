@@ -5,6 +5,9 @@ import static org.springframework.ldap.query.LdapQueryBuilder.query;
 import java.io.IOException;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +20,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.markLogic.bigTop.middle.ldapDomain.Person;
-import com.markLogic.bigTop.middle.marklogic.MarkLogicClient;
+import com.markLogic.bigTop.middle.marklogic.MarkLogicClientFactory;
 import com.markLogic.bigTop.middle.marklogic.MarkLogicService;
 import com.marklogic.client.DatabaseClient;
 
@@ -43,7 +46,8 @@ public class SearchController {
 	}
 
 	@GetMapping("/doSearch")
-	public String doSearch(@ModelAttribute("q") String q) throws javax.naming.NamingException, IOException {
+	public String doSearch(HttpServletRequest request, HttpServletResponse response, @ModelAttribute("q") String q) throws javax.naming.NamingException, IOException {
+		
 		String username = SecurityContextHolder.getContext().getAuthentication().getName();
 		String password = (String) SecurityContextHolder.getContext().getAuthentication().getCredentials();
 		if (q == null) {
@@ -57,8 +61,13 @@ public class SearchController {
 		Person person = getCurrentUser(ldapTemplate, username);
 		logger.info("person: " + person);
 		
-		DatabaseClient mlClient = MarkLogicClient.getMarkLogicClient(username, password);
+		DatabaseClient mlClient = (DatabaseClient) request.getSession().getAttribute("mlclient");
+		if (mlClient == null) {
+			mlClient = MarkLogicClientFactory.createMarkLogicClient(username, password);
+			request.getSession().setAttribute("mlclient", mlClient);
+		}
 		MarkLogicService mlService = new MarkLogicService(mlClient);
+
 		List<String> resultUris = mlService.search(q);
 		StringBuilder resultDiv = new StringBuilder("<div><h3>Search Results</h3><ol>");
 		for (String uri : resultUris) {

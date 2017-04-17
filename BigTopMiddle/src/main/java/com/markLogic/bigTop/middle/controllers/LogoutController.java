@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.markLogic.bigTop.middle.marklogic.MarkLogicClient;
+import com.marklogic.client.DatabaseClient;
 
 @RestController
 @Configuration
@@ -26,7 +26,10 @@ public class LogoutController {
 	    if (auth != null){    
 	        new SecurityContextLogoutHandler().logout(request, response, auth);
 	    }
-	    MarkLogicClient.releaseMarkLogicClient();
+		DatabaseClient mlClient = (DatabaseClient) request.getSession().getAttribute("mlclient");
+		if (mlClient != null) {
+			mlClient.release();
+		}
 	    response.sendRedirect("/login");
 	}
 }

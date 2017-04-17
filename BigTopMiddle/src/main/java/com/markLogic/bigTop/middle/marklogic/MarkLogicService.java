@@ -18,7 +18,7 @@ public class MarkLogicService {
 
     private static ObjectMapper mapper = new ObjectMapper();
     private DatabaseClient client;
-    
+
     public MarkLogicService(DatabaseClient client) {
     	this.client = client;
     }
@@ -33,7 +33,7 @@ public class MarkLogicService {
         qd.setCriteria(q);
         JacksonHandle searchResults = new JacksonHandle();
         searchResults = queryMgr.search(qd, searchResults);
-        prettyPrintJackson(searchResults);
+//        prettyPrintJackson(searchResults);
 
         List<String> resultUris = new ArrayList<String>();
         JsonNode results = searchResults.get().get("results");
