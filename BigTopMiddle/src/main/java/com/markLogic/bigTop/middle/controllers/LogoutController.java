@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.markLogic.bigTop.middle.marklogic.MarkLogicClient;
+
 @RestController
 @Configuration
 public class LogoutController {
@@ -24,6 +26,7 @@ public class LogoutController {
 	    if (auth != null){    
 	        new SecurityContextLogoutHandler().logout(request, response, auth);
 	    }
+	    MarkLogicClient.releaseMarkLogicClient();
 	    response.sendRedirect("/login");
 	}
 }

@@ -1,8 +1,8 @@
-package com.markLogic.bigTop.middle.marklogicDomain;
+package com.markLogic.bigTop.middle.marklogic.domain;
 
 import java.util.List;
 
-public class Product {
+public class Search {
     private String name;
     private float cost;
     private float price;

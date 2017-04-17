@@ -2,6 +2,7 @@ package com.markLogic.bigTop.middle.controllers;
 
 import static org.springframework.ldap.query.LdapQueryBuilder.query;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -14,8 +15,10 @@ import org.springframework.security.ldap.DefaultSpringSecurityContextSource;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.markLogic.bigTop.middle.PullJsonFromMarkLogic;
 import com.markLogic.bigTop.middle.ldapDomain.Person;
+import com.markLogic.bigTop.middle.marklogic.MarkLogicClient;
+import com.markLogic.bigTop.middle.marklogic.MarkLogicService;
+import com.marklogic.client.DatabaseClient;
 
 @RestController
 @Configuration
@@ -26,7 +29,7 @@ public class HomeController {
 	private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
 
 	@GetMapping("/")
-	public String index() throws javax.naming.NamingException {
+	public String index() throws javax.naming.NamingException, IOException {
 		String username = SecurityContextHolder.getContext().getAuthentication().getName();
 		String password = (String) SecurityContextHolder.getContext().getAuthentication().getCredentials();
 		logger.info("username: " + username);
@@ -35,8 +38,9 @@ public class HomeController {
 		LdapTemplate ldapTemplate = new LdapTemplate(contextSource);
 		Person person = getCurrentUser(ldapTemplate, username);
 
-		PullJsonFromMarkLogic obj = new PullJsonFromMarkLogic(username, password);
-		List<String> resultUris = obj.search("");
+		DatabaseClient mlClient = MarkLogicClient.getMarkLogicClient(username, password);
+		MarkLogicService mlService = new MarkLogicService(mlClient);
+		List<String> resultUris = mlService.search("");
 		StringBuilder resultDiv = new StringBuilder("<div>Search Results<ol>");
 		for (String uri : resultUris) {
 			resultDiv.append("<li>"+uri+"</li>");
