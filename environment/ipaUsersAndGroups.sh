@@ -30,15 +30,24 @@ echo "changeme" | ipa user-add bigtopreaderred --first=Readerred --last=BigTop -
 # BigTopReaderBlue
 echo "changeme" | ipa user-add bigtopreaderblue --first=Readerblue --last=BigTop --password
 
+# BigTopReaderBoth
+echo "changeme" | ipa user-add bigtopreaderboth --first=Readerboth --last=BigTop --password
+
+# BigTopReaderNone
+echo "changeme" | ipa user-add bigtopreadernone --first=Readernone --last=BigTop --password
+
+# SomeOtherPerson
+echo "changeme" | ipa user-add someotherperson --first=Person --last=Someother --password
+
 # Add users to the appropriate groups
 # Add admin user to admin group
 ipa group-add-member bigtopadmingroup --users={bigtopadmin}
 
 # Add everybody to the bigtopusers group
-ipa group-add-member bigtopusers --users={bigtopadmin,bigtopreaderred,bigtopreaderblue}
+ipa group-add-member bigtopusers --users={bigtopadmin,bigtopreaderred,bigtopreaderblue,bigtopreaderboth,bigtopreadernone}
 
 # Add admin and the red user to the bigtopreaderredgroup group
-ipa group-add-member bigtopreaderredgroup --users={bigtopadmin,bigtopreaderred}
+ipa group-add-member bigtopreaderredgroup --users={bigtopadmin,bigtopreaderred,bigtopreaderboth}
 
 # Add admin and the blue user to the bigtopreaderbluegroup group
-ipa group-add-member bigtopreaderbluegroup --users={bigtopadmin,bigtopreaderblue}
+ipa group-add-member bigtopreaderbluegroup --users={bigtopadmin,bigtopreaderblue,bigtopreaderboth}
