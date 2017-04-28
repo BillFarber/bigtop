@@ -5,7 +5,6 @@ import static org.springframework.ldap.query.LdapQueryBuilder.query;
 import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -25,7 +24,7 @@ public class HomeController {
 	DefaultSpringSecurityContextSource contextSource;
 
 	@GetMapping("/")
-	public String index(Model model, HttpServletRequest request, HttpServletResponse response) throws javax.naming.NamingException, IOException {
+	public String index(Model model, HttpServletRequest request) throws javax.naming.NamingException, IOException {
 		String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
 		LdapTemplate ldapTemplate = new LdapTemplate(contextSource);
