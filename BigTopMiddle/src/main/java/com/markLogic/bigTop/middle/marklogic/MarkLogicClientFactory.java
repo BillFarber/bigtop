@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.markLogic.bigTop.middle.marklogic.domain.Product;
+import com.markLogic.bigTop.middle.properties.PropertiesHelper;
 import com.marklogic.client.DatabaseClient;
 import com.marklogic.client.DatabaseClientFactory;
 import com.marklogic.client.DatabaseClientFactory.Authentication;
@@ -47,9 +48,8 @@ public class MarkLogicClientFactory {
 		InputStream input = null;
 		
 		try {
-			input = getResourceAsStream("marklogic.properties");
+			input = PropertiesHelper.getResourceAsStream("marklogic.properties");
 			properties.load(input);
-			// get the property value and print it out
 		    ML_HOST = properties.getProperty("host");
 		    ML_REST_PORT = Integer.valueOf(properties.getProperty("port"));
 			ML_AUTHENTICATION = Authentication.valueOf(properties.getProperty("authentication"));
@@ -67,13 +67,4 @@ public class MarkLogicClientFactory {
 		}
 		return success;
 	}
-
-    public static InputStream getResourceAsStream( String resource ) {
-      final InputStream in = getContextClassLoader().getResourceAsStream( resource );
-      return in == null ? getResourceAsStream( resource ) : in;
-    }
-
-    private static ClassLoader getContextClassLoader() {
-      return Thread.currentThread().getContextClassLoader();
-    }
 }

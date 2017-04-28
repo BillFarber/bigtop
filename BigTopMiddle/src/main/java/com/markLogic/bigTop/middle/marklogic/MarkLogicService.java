@@ -33,7 +33,6 @@ public class MarkLogicService {
         qd.setCriteria(q);
         JacksonHandle searchResults = new JacksonHandle();
         searchResults = queryMgr.search(qd, searchResults);
-//        prettyPrintJackson(searchResults);
 
         List<String> resultUris = new ArrayList<String>();
         JsonNode results = searchResults.get().get("results");
