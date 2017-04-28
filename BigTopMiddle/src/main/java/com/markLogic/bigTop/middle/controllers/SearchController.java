@@ -33,15 +33,18 @@ public class SearchController {
 	private static final Logger logger = LoggerFactory.getLogger(SearchController.class);
 
 	@GetMapping("/search")
-	public String search() throws javax.naming.NamingException {
+	public String search(HttpServletRequest request, HttpServletResponse response) throws javax.naming.NamingException {
 		String username = SecurityContextHolder.getContext().getAuthentication().getName();
 		LdapTemplate ldapTemplate = new LdapTemplate(contextSource);
 		Person person = getCurrentUser(ldapTemplate, username);
-		logger.info("person: " + person);
-
+		
+		String path = request.getContextPath();
+		String doSearchPath = path + "/doSearch";
+		String logoutPath = path + "/logout";
+		
 		String welcome = "<h1>Welcome to the search page " + person.getFullName() + "!</h1>";
-		String logoutLink = "<div><a href='/logout'>Logout</a></div>";
-		String queryForm = "<div><form method='GET' action='/doSearch'><input type='text' name='q' value=''><input type='submit' value='Submit'></form></div>";
+		String logoutLink = "<div><a href='" + logoutPath + "'>Logout</a></div>";
+		String queryForm = "<div><form method='GET' action='" + doSearchPath + "'><input type='text' name='q' value=''><input type='submit' value='Submit'></form></div>";
 		return "<html><head><title>BigTop Middle</title></head><body>"+welcome.toString()+person.toHtmlDiv()+queryForm.toString()+logoutLink+"</body></html>";
 	}
 
@@ -50,16 +53,14 @@ public class SearchController {
 		
 		String username = SecurityContextHolder.getContext().getAuthentication().getName();
 		String password = (String) SecurityContextHolder.getContext().getAuthentication().getCredentials();
-		if (q == null) {
-			System.out.println("q is null");
-		} else {
-			System.out.println("q: " + q);
-		}
 		logger.info("Search for: " + q);
 
 		LdapTemplate ldapTemplate = new LdapTemplate(contextSource);
 		Person person = getCurrentUser(ldapTemplate, username);
-		logger.info("person: " + person);
+		
+		String path = request.getContextPath();
+		String doSearchPath = path + "/doSearch";
+		String logoutPath = path + "/logout";
 		
 		DatabaseClient mlClient = (DatabaseClient) request.getSession().getAttribute("mlclient");
 		if (mlClient == null) {
@@ -76,8 +77,8 @@ public class SearchController {
 		resultDiv.append("</ol></div>");
 
 		String welcome = "<h1>Welcome to the search page " + person.getFullName() + "!</h1>";
-		String logoutLink = "<div><a href='/logout'>Logout</a></div>";
-		String queryForm = "<div><form method='GET'><input type='text' name='q' value='"+q+"'><input type='submit' value='Submit'></form></div>";
+		String logoutLink = "<div><a href='" + logoutPath + "'>Logout</a></div>";
+		String queryForm = "<div><form method='GET' action='" + doSearchPath + "'><input type='text' name='q' value=''><input type='submit' value='Submit'></form></div>";
 		return "<html><head><title>BigTop Middle</title></head><body>"+welcome.toString()+person.toHtmlDiv()+queryForm+resultDiv.toString()+logoutLink+"</body></html>";
 	}
 

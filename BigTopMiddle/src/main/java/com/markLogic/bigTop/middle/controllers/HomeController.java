@@ -8,8 +8,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.ldap.core.LdapTemplate;
@@ -28,15 +26,11 @@ import com.marklogic.client.DatabaseClient;
 public class HomeController {
 	@Autowired
 	DefaultSpringSecurityContextSource contextSource;
-	
-	private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
 
 	@GetMapping("/")
 	public String index(HttpServletRequest request, HttpServletResponse response) throws javax.naming.NamingException, IOException {
 		String username = SecurityContextHolder.getContext().getAuthentication().getName();
 		String password = (String) SecurityContextHolder.getContext().getAuthentication().getCredentials();
-		logger.info("username: " + username);
-		logger.info("password: " + password);
 
 		LdapTemplate ldapTemplate = new LdapTemplate(contextSource);
 		Person person = getCurrentUser(ldapTemplate, username);
@@ -49,6 +43,10 @@ public class HomeController {
 		}
 		MarkLogicService mlService = new MarkLogicService(mlClient);
 		
+		String path = request.getContextPath();
+		String searchPath = path + "/search";
+		String logoutPath = path + "/logout";
+		
 		List<String> resultUris = mlService.search("");
 		StringBuilder resultDiv = new StringBuilder("<div>Search Results<ol>");
 		for (String uri : resultUris) {
@@ -57,8 +55,8 @@ public class HomeController {
 		resultDiv.append("</ol></div>");
 		String head = "<head><title>BigTop Middle</title></head>";
 		String welcome = "<h1>Welcome to the home page " + person.getFullName() + "!</h1>";
-		String searchLink = "<div><a href='/search'>Search Page</a></div>";
-		String logoutLink = "<div><a href='/logout'>Logout</a></div>";
+		String searchLink = "<div><a href='" + searchPath + "'>Search Page</a></div>";
+		String logoutLink = "<div><a href='" + logoutPath + "'>Logout</a></div>";
 		String body = "<body>"+welcome+person.toHtmlDiv()+searchLink+logoutLink+"</body>";
 
 		return "<html>"+head+body+"</html>";
