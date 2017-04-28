@@ -48,18 +48,8 @@ public final class Person {
 	@Attribute(name = "cn")
 	private String cn;
 
-	public String toHtmlDiv() {
-		StringBuilder sb = new StringBuilder("<div>");
-		sb.append("<ul>");
-		sb.append("<li>"+this.dn+"</li>");
-		sb.append("<li>"+this.firstName+"</li>");
-		sb.append("<li>"+this.lastName+"</li>");
-		sb.append("<li>"+this.fullName+"</li>");
-		sb.append("<li>"+this.cn+"</li>");
-		sb.append("<li>"+this.uid+"</li>");
-		sb.append("</ul>");
-		sb.append("</div>");
-		return sb.toString();
+	public Name getDn() {
+		return dn;
 	}
 
 	public String getCn() {

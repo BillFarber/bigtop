@@ -45,7 +45,7 @@ public class SearchController {
 		String welcome = "<h1>Welcome to the search page " + person.getFullName() + "!</h1>";
 		String logoutLink = "<div><a href='" + logoutPath + "'>Logout</a></div>";
 		String queryForm = "<div><form method='GET' action='" + doSearchPath + "'><input type='text' name='q' value=''><input type='submit' value='Submit'></form></div>";
-		return "<html><head><title>BigTop Middle</title></head><body>"+welcome.toString()+person.toHtmlDiv()+queryForm.toString()+logoutLink+"</body></html>";
+		return "<html><head><title>BigTop Middle</title></head><body>"+welcome.toString()+queryForm.toString()+logoutLink+"</body></html>";
 	}
 
 	@GetMapping("/doSearch")
@@ -79,7 +79,7 @@ public class SearchController {
 		String welcome = "<h1>Welcome to the search page " + person.getFullName() + "!</h1>";
 		String logoutLink = "<div><a href='" + logoutPath + "'>Logout</a></div>";
 		String queryForm = "<div><form method='GET' action='" + doSearchPath + "'><input type='text' name='q' value=''><input type='submit' value='Submit'></form></div>";
-		return "<html><head><title>BigTop Middle</title></head><body>"+welcome.toString()+person.toHtmlDiv()+queryForm+resultDiv.toString()+logoutLink+"</body></html>";
+		return "<html><head><title>BigTop Middle</title></head><body>"+welcome.toString()+queryForm+resultDiv.toString()+logoutLink+"</body></html>";
 	}
 
 	public Person getCurrentUser(LdapTemplate ldapTemplate, String uid) {
