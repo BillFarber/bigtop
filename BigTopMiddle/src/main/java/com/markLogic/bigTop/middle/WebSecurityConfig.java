@@ -1,5 +1,6 @@
 package com.markLogic.bigTop.middle;
 
+import java.io.IOException;
 import java.util.Arrays;
 
 import org.springframework.context.annotation.Bean;
@@ -9,15 +10,30 @@ import org.springframework.security.config.annotation.authentication.configurers
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.ldap.DefaultSpringSecurityContextSource;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+
+import com.markLogic.bigTop.middle.properties.SecurityProperties;
+import com.markLogic.bigTop.middle.properties.SecurityPropertiesFactory;
 
 @Configuration
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
+	private static SecurityProperties securityProperties;
+	
+	static {
+		try {
+			securityProperties = SecurityPropertiesFactory.createSecurityProperties();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	@Bean
 	public DefaultSpringSecurityContextSource ldapContextSource() {
-		DefaultSpringSecurityContextSource contextSource = new DefaultSpringSecurityContextSource("ldap://freeipa.bigtop.local:389/dc=bigtop,dc=local");
-		contextSource.setUserDn("uid=admin,cn=users,cn=accounts,dc=bigtop,dc=local");
-		contextSource.setPassword("december");
+		String providerURL = securityProperties.getBaseUrl() + securityProperties.getBaseDN();
+		DefaultSpringSecurityContextSource contextSource = new DefaultSpringSecurityContextSource(providerURL);
+		contextSource.setUserDn(securityProperties.getUserDN());
+		contextSource.setPassword(securityProperties.getPassword());
 		contextSource.setReferral("follow");
 		contextSource.afterPropertiesSet();
 		return contextSource;
@@ -29,8 +45,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			.authorizeRequests()
 				.anyRequest().fullyAuthenticated()
 				.and()
-			.formLogin().defaultSuccessUrl("/");
-	}
+			.formLogin().defaultSuccessUrl("/")
+				.and()
+			.logout()
+				.logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+				.logoutSuccessUrl("/login");
+		}
 
 	@Override
 	public void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -39,7 +59,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		DefaultSpringSecurityContextSource ldapContextSource = ldapContextSource();		
 		LdapAuthenticationProviderConfigurer<AuthenticationManagerBuilder> ldapAuthenticationProviderConfigurer = auth.ldapAuthentication();
 		ldapAuthenticationProviderConfigurer
-			.userDnPatterns("uid={0},cn=users,cn=accounts")
+			.userDnPatterns(securityProperties.getUserdnPattern())
 			.contextSource(ldapContextSource);
 
 		auth.apply(ldapAuthenticationProviderConfigurer);
@@ -47,7 +67,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Bean
 	public DefaultSpringSecurityContextSource contextSource() {
-		return  new DefaultSpringSecurityContextSource(Arrays.asList("ldap://freeipa.bigtop.local:389/"), "dc=bigtop,dc=local");
+		return  new DefaultSpringSecurityContextSource(Arrays.asList(securityProperties.getBaseUrl()), securityProperties.getBaseDN());
 	}
 
 }
