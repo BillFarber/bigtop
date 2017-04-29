@@ -5,6 +5,8 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,6 +21,8 @@ import com.marklogic.client.DatabaseClient;
 @Configuration
 public class LogoutController {
 
+	private static final Logger logger = LoggerFactory.getLogger(LogoutController.class);
+
 	@GetMapping("/logout")
 	@PostMapping("/logout")
 	public void logoutPage (HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -29,6 +33,7 @@ public class LogoutController {
 		DatabaseClient mlClient = (DatabaseClient) request.getSession().getAttribute("mlclient");
 		if (mlClient != null) {
 			mlClient.release();
+			logger.info("Released MarkLogic client");
 		}
 	    response.sendRedirect("logout");
 	}

@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.authentication.configurers
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.ldap.DefaultSpringSecurityContextSource;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import com.markLogic.bigTop.middle.properties.SecurityProperties;
@@ -45,7 +46,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			.authorizeRequests()
 				.anyRequest().fullyAuthenticated()
 				.and()
-			.formLogin().defaultSuccessUrl("/")
+			.formLogin().successHandler(successHandler())
 				.and()
 			.logout()
 				.logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
@@ -70,4 +71,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		return  new DefaultSpringSecurityContextSource(Arrays.asList(securityProperties.getBaseUrl()), securityProperties.getBaseDN());
 	}
 
+	@Bean
+	public AuthenticationSuccessHandler successHandler() {
+		return new CustomAuthenticationSuccessHandler();
+	}
 }
