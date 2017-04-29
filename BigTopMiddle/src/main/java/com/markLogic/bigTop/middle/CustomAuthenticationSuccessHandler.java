@@ -41,7 +41,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 		session.setAttribute("mlclient", mlClient);
 
 		response.setStatus(HttpServletResponse.SC_OK);
-		response.sendRedirect("");
+		response.sendRedirect(".");
 	}
 
 	public Person getCurrentUser(LdapTemplate ldapTemplate, String uid) {
