@@ -18,10 +18,10 @@
 		</ul>
 	</div>
 	<div>
-		<a href='${searchPath}'>Search Page</a>
+		<a href='search'>Search Page</a>
 	</div>
 	<div>
-		<a href='${logoutPath}'>Logout</a>
+		<a href='logout'>Logout</a>
 	</div>
 </body>
 </html>

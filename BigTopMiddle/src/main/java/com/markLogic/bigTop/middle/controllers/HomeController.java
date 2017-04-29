@@ -30,13 +30,7 @@ public class HomeController {
 		LdapTemplate ldapTemplate = new LdapTemplate(contextSource);
 		Person person = getCurrentUser(ldapTemplate, username);
 
-		String path = request.getContextPath();
-		String searchPath = path + "/search";
-		String logoutPath = path + "/logout";
-
 		model.addAttribute("person", person);
-		model.addAttribute("searchPath", searchPath);
-		model.addAttribute("logoutPath", logoutPath);
 		return "home";
 	}
 	

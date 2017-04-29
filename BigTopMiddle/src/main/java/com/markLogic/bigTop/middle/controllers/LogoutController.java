@@ -30,9 +30,6 @@ public class LogoutController {
 		if (mlClient != null) {
 			mlClient.release();
 		}
-		
-		String path = request.getContextPath();
-		String logoutPath = path + "/logout";
-	    response.sendRedirect(logoutPath);
+	    response.sendRedirect("logout");
 	}
 }

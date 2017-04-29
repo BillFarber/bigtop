@@ -9,7 +9,7 @@
 <body>
 	<h1>Welcome to the Spring/MarkLogic/LDAP demo, ${person.fullName}!</h1>
 	<div>
-		<form method='GET' action='/bigtop/doSearch'>
+		<form method='GET' action='search'>
 			<input type='text' name='q' value=''><input type='submit'
 				value='Submit'>
 		</form>
@@ -25,7 +25,7 @@
 		</c:if>
 	</div>
 	<div>
-		<a href='${logoutPath}'>Logout</a>
+		<a href='logout'>Logout</a>
 	</div>
 </body>
 </html>
