@@ -1,7 +1,36 @@
-      sudo yum -y install ipa-client
-      sudo ipa-client-install --mkhomedir
-      kinit admin
-      klist
+################################################################
+# These notes describe setting up a client vm in the VirtualBox .
+# 
+# This is pretty straight-forward. Probably doesn't need notes.
+#
+################################################################
 
-      sudo yum -y groupinstall "GNOME Desktop" -y
-      startx
+################################################################
+# Verify resolv.conf so the machine knows which machine is running FreeIPA
+#
+# NOTE: Due to my lack of network engineering skills in a VirtualBox
+#       environment, this resolv.conf frequently needs to be re-set
+#       after reboots.
+################################################################
+sudo vi /etc/resolv.conf
+		nameserver	192.168.35.10
+
+################################################################
+# Install the IPA client
+################################################################
+sudo yum -y install ipa-client
+sudo ipa-client-install --mkhomedir
+	(Take the defaults)
+	
+################################################################
+# Test the Kerberos locally
+################################################################
+kinit admin
+klist
+
+################################################################
+# Install the GNOME desktop
+################################################################
+sudo yum -y groupinstall "GNOME Desktop" -y
+startx
+      
