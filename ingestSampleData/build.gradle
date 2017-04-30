@@ -7,10 +7,12 @@ buildscript {
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
+apply plugin: 'application'
 
 jar {
     baseName = 'ingestSampleData'
     version =  '0.1.0'
+	mainClassName = 'com.markLogic.bigTop.jackson.LoadSampleData'
 }
 task fatJar(type: Jar) {
 	manifest {
@@ -21,6 +23,10 @@ task fatJar(type: Jar) {
 	from { configurations.compile.collect { it.isDirectory() ? is : zipTree(it) } } 
 	with jar
  }
+ 
+run {
+  args += '/Users/pbarber/Documents/workspaces/BigTop/ingestSampleData/src/main/resources/data/product/'
+}
 
 repositories {
     mavenCentral()
