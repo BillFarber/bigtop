@@ -1,37 +1,54 @@
-    sudo yum -y install ipa-server ipa-server-dns
-    sudo ipa-server-install --no-host-dns --mkhomedir
-yes
-<enter>
-<enter>
-<enter>
-december
-december
-december
-december
-no
-<enter>
-<enter>
-<enter>
-<enter>
-<enter>
-yes
+################################################################
+# These notes describe running the FreeIPA server setup.
+# 
+# FreeIPA is a complex suite of tools. A deep understanding of FreeIPA
+# is beyond the scope of this project. Therefore, this document uses
+# the most basic installation and configuration I could find.
+#
+# Password for EVERYTHING: december
+#
+################################################################
 
+################################################################
+# Install FreeIPA
+################################################################
+sudo yum -y install ipa-server ipa-server-dns
+sudo ipa-server-install --no-host-dns --mkhomedir
+	Do you want to configure integrated DNS (BIND)? [no]: yes
+	Server host name [freeipa.bigtop.local]: <enter>
+	Please confirm the domain name [bigtop.local]: <enter>
+	Please provide a realm name [BIGTOP.LOCAL]: <enter>
+	Directory Manager password: december
+	Password (confirm): december
+	IPA admin password: december
+	Password (confirm): december
+	Do you want to configure DNS forwarders? [yes]: no
+	Do you want to search for missing reverse zones? [yes]: <enter>
+	Do you want to create reverse zone for IP 192.168.35.10 [yes]: <enter>
+	Please specify the reverse zone name [35.168.192.in-addr.arpa.]: <enter>
+	Continue to configure the system with these values? [no]: yes
 
-    kinit admin
-    klist
-    http://freeipa.bigtop.local/
+################################################################
+# Test the Kerberos locally
+################################################################
+kinit admin
+klist
 
-	# Useful FreeIPA
-	sudo ipactl stop
-	sudo ipactl start
+################################################################
+# Use the FreeIPA web admin
+################################################################
+http://freeipa.bigtop.local/
 
-    # Useful LDAP
-    ldapsearch -H ldaps://freeipa.bigtop.local -w december -D "uid=admin,cn=users,cn=accounts,dc=bigtop,dc=local" -b "cn=users,cn=accounts,dc=bigtop,dc=local"
-    ldapsearch -h freeipa.bigtop.local -p 389 -x -b "" -s base -LLL supportedSASLMechanisms
-    ldapsearch -h freeipa.bigtop.local -w december -D "uid=admin,cn=users,cn=accounts,dc=bigtop,dc=local" -b "cn=groups,cn=accounts,dc=bigtop,dc=local"
+################################################################
+# Stop/Start FreeIPA
+################################################################
+# Useful FreeIPA
+sudo ipactl stop
+sudo ipactl start
 
-	# Export LDAP
-    /var/lib/dirsrv/scripts-BIGTOP-LOCAL/db2ldif -n userRoot -a bigtop.ldif
-      
-    # Import LDAP
-    /var/lib/dirsrv/scripts-BIGTOP-LOCAL/ldif2db -i /var/lib/dirsrv/slapd-BIGTOP-LOCAL/ldif/bigtop.ldif  -n userRoot
+################################################################
+# Useful commands for testing LDAP
+################################################################
+ldapsearch -H ldaps://freeipa.bigtop.local -w december -D "uid=admin,cn=users,cn=accounts,dc=bigtop,dc=local" -b "cn=users,cn=accounts,dc=bigtop,dc=local"
+ldapsearch -h freeipa.bigtop.local -p 389 -x -b "" -s base -LLL supportedSASLMechanisms
+ldapsearch -h freeipa.bigtop.local -w december -D "uid=admin,cn=users,cn=accounts,dc=bigtop,dc=local" -b "cn=groups,cn=accounts,dc=bigtop,dc=local"
