@@ -89,54 +89,83 @@ function restart_check {
 TIMESTAMP=`$AUTH_CURL "http://$ML_HOST:8001/admin/v1/timestamp"`
 echo "After ML start TIMESTAMP=$TIMESTAMP"
 
+#######################################################
+# Delete the REST server
+########################################################
 echo "Delete BigTopServer"
 REST_DELETE_REPLY=`$AUTH_CURL -X DELETE -H "Content-Type:application/json" \
 	http://$ML_HOST:8002/manage/v2/servers/BigTopServer?group-id=Default`
 #echo "Delete BigTopServer response: $REST_DELETE_REPLY"
 
+#######################################################
+# Restart ML
+########################################################
 echo "Request restart"
 REST_RESTART_REPLY=`$AUTH_CURL -X POST -H "Content-Type:application/json" \
 	-d '{"operation": "restart-local-cluster"}' http://$ML_HOST:8002/manage/v2`
 #echo "Restart response: $REST_RESTART_REPLY"
-
 restart_check $ML_HOST $TIMESTAMP 95
 
+#######################################################
+# Delete the BigTopContent database
+########################################################
 echo "Delete BigTopContent"
 DELETE_CONTENT_REPLY=`$AUTH_CURL -X DELETE -H "Content-Type:application/json" \
 	http://$ML_HOST:8002/manage/v2/databases/BigTopContent?forest-delete=data`
 #echo "Delete BigTopContent response: $DELETE_CONTENT_REPLY"
 
+#######################################################
+# Delete the BigTopModules database
+########################################################
 echo "Delete BigTopModules"
 DELETE_MODULES_REPLY=`$AUTH_CURL -X DELETE -H "Content-Type:application/json" \
 	http://$ML_HOST:8002/manage/v2/databases/BigTopModules?forest-delete=data`
 #echo "Delete BigTopModules response: $DELETE_MODULES_REPLY"
 
+#######################################################
+# Delete the LDAP external security connector
+########################################################
 echo "Delete LDAP external security"
 DELETE_LDAP_REPLY=`$AUTH_CURL -X DELETE -H "Content-Type:application/json" \
 	http://$ML_HOST:8002/manage/v2/external-security/BigTop-LDAP-security`
 #echo "Delete LDAP external security response: $DELETE_LDAP_REPLY"
 
+#######################################################
+# Delete the SSL Certificate Template
+########################################################
+echo "Delete the SSL Certificate Template"
+DELETE_CERTIFICATE_REPLY=`$AUTH_CURL -X DELETE -H "Content-Type:application/json" \
+	http://$ML_HOST:8002/manage/v2/certificate-templates/BigTopCertTemplate`
+#echo "Delete the SSL Certificate Template response: $DELETE_CERTIFICATE_REPLY"
+
+#######################################################
+# Delete BigTopAdminRole
+########################################################
 echo "Delete BigTopAdminRole role"
 DELETE_ROLE_REPLY=`$AUTH_CURL -X DELETE -H "Content-Type:application/json" \
 	http://$ML_HOST:8002/manage/v2/roles/BigTopAdminRole`
 #echo "Delete BigTopAdminRole role response: $DELETE_ROLE_REPLY"
 
+#######################################################
+# Delete BigTopUsersRole
+########################################################
 echo "Delete BigTopUsersRole role"
 DELETE_ROLE_REPLY=`$AUTH_CURL -X DELETE -H "Content-Type:application/json" \
 	http://$ML_HOST:8002/manage/v2/roles/BigTopUsersRole`
 #echo "Delete BigTopUsersRole role response: $DELETE_ROLE_REPLY"
 
+#######################################################
+# Delete BigTopReaderRole_red
+########################################################
 echo "Delete BigTopReaderRole_red role"
 DELETE_ROLE_REPLY=`$AUTH_CURL -X DELETE -H "Content-Type:application/json" \
 	http://$ML_HOST:8002/manage/v2/roles/BigTopReaderRole_red`
 #echo "Delete BigTopReaderRole_red role response: $DELETE_ROLE_REPLY"
 
+#######################################################
+# Delete BigTopReaderRole_blue
+########################################################
 echo "Delete BigTopReaderRole_blue role"
 DELETE_ROLE_REPLY=`$AUTH_CURL -X DELETE -H "Content-Type:application/json" \
 	http://$ML_HOST:8002/manage/v2/roles/BigTopReaderRole_blue`
 #echo "Delete BigTopReaderRole_blue role response: $DELETE_ROLE_REPLY"
-
-echo "Delete the SSL Certificate Template"
-DELETE_CERTIFICATE_REPLY=`$AUTH_CURL -X DELETE -H "Content-Type:application/json" \
-	http://$ML_HOST:8002/manage/v2/certificate-templates/BigTopCertTemplate`
-#echo "Delete the SSL Certificate Template response: $DELETE_CERTIFICATE_REPLY"

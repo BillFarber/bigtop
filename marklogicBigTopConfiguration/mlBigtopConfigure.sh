@@ -89,64 +89,91 @@ function restart_check {
 TIMESTAMP=`$AUTH_CURL "http://$ML_HOST:8001/admin/v1/timestamp"`
 echo "After ML start TIMESTAMP=$TIMESTAMP"
 
+#######################################################
+# Create a default REST server. Customize later.
+########################################################
 echo "Create default REST server"
 REST_CREATE_REPLY=`$AUTH_CURL -X POST -H "Content-Type:application/json" \
 	-d '{"rest-api": { "name": "BigTopServer", "port": "8011", "database": "BigTopContent", "modules-database": "BigTopModules" } }' \
 	http://$ML_HOST:8002/v1/rest-apis`
 #echo "Create default REST server response: $REST_CREATE_REPLY"
 
+#######################################################
+# Restart ML
+########################################################
 echo "Request restart"
 REST_RESTART_REPLY=`$AUTH_CURL -X POST -H "Content-Type:application/json" \
 	-d '{"operation": "restart-local-cluster"}' http://$ML_HOST:8002/manage/v2`
 #echo "Restart response: $REST_RESTART_REPLY"
-
 TIMESTAMP=`$AUTH_CURL "http://$ML_HOST:8001/admin/v1/timestamp"`
 echo "After ML start TIMESTAMP=$TIMESTAMP"
 
+#######################################################
+# Create the External Security connector to LDAP
+########################################################
 echo "Create LDAP external security"
 CREATE_LDAP_REPLY=`$AUTH_CURL -X POST -H "Content-Type:application/json" \
 	-d @ExternalConfig.json http://$ML_HOST:8002/manage/v2/external-security`
 #echo "Create LDAP external security response: $CREATE_LDAP_REPLY"
 
+#######################################################
+# Create the Certificate Template to allow SSL
+########################################################
 echo "Create BigTopCertTemplate"
 CREATE_TEMPLATE_REPLY=`$AUTH_CURL -X POST -H "Content-Type:application/json" \
   -d @BigTopCertTemplate.json http://$ML_HOST:8002/manage/v2/certificate-templates`
 #echo "Create BigTopCertTemplate response: $CREATE_TEMPLATE_REPLY"
 
+#######################################################
+# Update the REST server with the LDAP connector and enable SSL
+########################################################
 echo "Update the REST server with the new LDAP external security"
 UPDATE_SERVER_REPLY=`$AUTH_CURL -X PUT -H "Content-type: application/json" \
 	-d '{"authentication":"basic", "internal-security":false,"default-user":"nobody","external-security":"BigTop-LDAP-security", "ssl-require-client-certificate": false }' \
 	http://$ML_HOST:8002/manage/v2/servers/BigTopServer/properties?group-id=Default`
 echo "Update the REST server with the new LDAP external security response: $UPDATE_SERVER_REPLY"
 
+#######################################################
+# Restart ML
+########################################################
 TIMESTAMP=`$AUTH_CURL "http://$ML_HOST:8001/admin/v1/timestamp"`
 echo "After ML start TIMESTAMP=$TIMESTAMP"
-
 echo "Request restart"
 REST_RESTART_REPLY=`$AUTH_CURL -X POST -H "Content-Type:application/json" \
 	-d '{"operation": "restart-local-cluster"}' http://$ML_HOST:8002/manage/v2`
 #echo "Restart response: $REST_RESTART_REPLY"
-
 restart_check $ML_HOST $TIMESTAMP 95
 
+#######################################################
+# Create the BigTopAdminRole
+########################################################
 echo "Create BigTopAdminRole to give users the rest-reader execute privilege and access"
 CREATE_ROLE_REPLY=`$AUTH_CURL -X POST -H "Content-Type:application/json" \
 	-d '{"role-name":"BigTopAdminRole", "external-name":["cn=bigtopadmingroup,cn=groups,cn=accounts,dc=bigtop,dc=local"], "role":["rest-writer"]}' \
 	http://$ML_HOST:8002/manage/v2/roles`
 #echo "Create BigTopAdminRole response: $CREATE_ROLE_REPLY"
 
+#######################################################
+# Create the BigTopUsersRole
+########################################################
 echo "Create BigTopUsersRole to give users the rest-reader execute privilege and access"
 CREATE_ROLE_REPLY=`$AUTH_CURL -X POST -H "Content-Type:application/json" \
 	-d '{"role-name":"BigTopUsersRole", "external-name":["cn=bigtopusers,cn=groups,cn=accounts,dc=bigtop,dc=local"], "privilege":[{"privilege-name":"rest-reader", "action":"http://marklogic.com/xdmp/privileges/rest-reader","kind":"execute"}]}' \
 	http://$ML_HOST:8002/manage/v2/roles`
 #echo "Create BigTopUsersRole response: $CREATE_ROLE_REPLY"
 
+#######################################################
+# Create the BigTopReaderRole_red
+########################################################
 echo "Create BigTopReaderRole_red to give users the rest-reader execute privilege and access"
 CREATE_ROLE_REPLY=`$AUTH_CURL -X POST -H "Content-Type:application/json" \
 	-d '{"role-name":"BigTopReaderRole_red", "external-name":["cn=bigtopreaderredgroup,cn=groups,cn=accounts,dc=bigtop,dc=local"]}' \
 	http://$ML_HOST:8002/manage/v2/roles`
 #echo "Create BigTopReaderRole_red response: $CREATE_ROLE_REPLY"
 
+#######################################################
+# Create the BigTopReaderRole_blue
+########################################################
 echo "Create BigTopReaderRole_blue to give users the rest-reader execute privilege and access"
 CREATE_ROLE_REPLY=`$AUTH_CURL -X POST -H "Content-Type:application/json" \
 	-d '{"role-name":"BigTopReaderRole_blue", "external-name":["cn=bigtopreaderbluegroup,cn=groups,cn=accounts,dc=bigtop,dc=local"]}' \
