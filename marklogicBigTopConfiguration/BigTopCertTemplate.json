@@ -1,0 +1,14 @@
+{
+	"template-name": "BigTopCertTemplate",
+	"template-description": "SSL Certificate Template for the BigTop LDAP demo",
+	"template-version": 1,
+	"key-options": null,
+	"req": {
+		"version": 0,
+		"subject": {
+			"organizationName": [
+				"Harris"
+			]
+		}
+	}
+}
