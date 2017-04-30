@@ -45,7 +45,7 @@ public class MarkLogicClientFactory {
 		Boolean success = false;
 		Properties properties = new Properties();
 		InputStream input = null;
-		
+
 		try {
 			input = getResourceAsStream("marklogic.properties");
 			properties.load(input);
