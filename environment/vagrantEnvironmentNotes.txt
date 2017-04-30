@@ -1,0 +1,51 @@
+################################################################
+# These notes describe using Vagrant to provision and control the BigTop environment
+# 
+# Using Vagrant is not necessary. I simply found Vagrant useful
+# for frequently provisioning and tearing down an environment.
+# That permits me to try different approaches with a low cost.
+################################################################
+
+################################################################
+# Prepare Vagrant
+# 
+# Ensure the target VM is available
+# Ensure the VirtualBox guest tools are available
+################################################################
+vagrant init minimal/centos7
+vagrant plugin install vagrant-vbguest
+
+################################################################
+# Initial VM Provisioning
+# 
+# For each machine, the first time you start it, it will fail.
+# In VirtualBox, disable the USB 2.0 port on each machine.
+# Then, rerun vagrant up
+################################################################
+vagrant up
+# Update the machines in VirtualBox
+vagrant up
+
+################################################################
+# Configure the VMs 
+# 
+# After a machine is running, update everything
+# Update the hosts files so they know about each other
+# Update resolv.conf so they know which machine is running FreeIPA
+# Install, configure and enable the time server (NTP)
+#
+# Execute the commands for each machine
+################################################################
+vagrant ssh freeipa.bigtop.local
+sudo yum -y update && yum -y upgrade
+sudo vi /etc/hosts
+		192.168.35.10	freeipa.bigtop.local	freeipa
+		192.168.35.20	marktom.bigtop.local	marktom
+		192.168.35.30	client.bigtop.local		client
+sudo vi /etc/resolv.conf
+		nameserver	192.168.35.10
+# Start the time server
+sudo timedatectl set-timezone UTC
+sudo yum -y install ntp
+sudo systemctl enable ntpd.service
+sudo systemctl start ntpd.service
