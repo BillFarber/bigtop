@@ -17,11 +17,7 @@
 		<li>${person.uid}</li>
 		</ul>
 	</div>
-	<div>
-		<a href='search'>Search Page</a>
-	</div>
-	<div>
-		<a href='logout'>Logout</a>
-	</div>
+	<br/>
+	<jsp:include page="/WEB-INF/jsps/footer.jsp"/>
 </body>
 </html>

@@ -15,7 +15,7 @@ import com.markLogic.bigTop.middle.ldapDomain.Person;
 @Controller
 @Configuration
 public class HomeController {
-	@GetMapping("/")
+	@GetMapping(value={"/", "/home"})
 	public String index(Model model, HttpServletRequest request) throws javax.naming.NamingException, IOException {
 		HttpSession session = request.getSession();
 		Person person = (Person) session.getAttribute("person");

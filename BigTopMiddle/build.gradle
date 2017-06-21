@@ -37,7 +37,7 @@ targetCompatibility = 1.8
 
 // tag::security[]
 dependencies {
-    compile group: 'com.marklogic', name: 'java-client-api', version: '3.0.7'
+    compile group: 'com.marklogic', name: 'java-client-api', version: '4.0.1'
     compile("org.springframework.boot:spring-boot-starter-web")
     compile("org.springframework.boot:spring-boot-starter-security")
     compile("org.springframework.ldap:spring-ldap-core")

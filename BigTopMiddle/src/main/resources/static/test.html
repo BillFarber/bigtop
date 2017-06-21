@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Polygons Demo</title>
+</head>
+<body>
+	<h1>Polygons Demo</h1>
+	<div>
+		<canvas id="c" />
+	</div>
+	<div>
+		<a href='search'>Search Page</a>
+	</div>
+	<div>
+		<a href='logout'>Logout</a>
+	</div>
+<script language="JavaScript">
+var c2 = document.getElementById('c').getContext('2d');
+c2.fillStyle = '#f00';
+c2.beginPath();
+c2.moveTo(0, 0);
+c2.lineTo(100, 50);
+c2.lineTo(50, 100);
+c2.lineTo(0, 90);
+c2.closePath();
+c2.fill();
+</script>
+</body>
+</html>

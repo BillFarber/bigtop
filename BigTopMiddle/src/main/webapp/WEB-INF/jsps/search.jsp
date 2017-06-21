@@ -24,11 +24,7 @@
 			</ul>
 		</c:if>
 	</div>
-	<div>
-		<a href='.'>Home</a>
-	</div>
-	<div>
-		<a href='logout'>Logout</a>
-	</div>
+	<br/>
+	<jsp:include page="/WEB-INF/jsps/footer.jsp"/>
 </body>
 </html>
