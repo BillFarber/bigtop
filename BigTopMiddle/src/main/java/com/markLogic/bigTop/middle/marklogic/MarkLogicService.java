@@ -161,6 +161,7 @@ public class MarkLogicService {
 
 	public List<String> cacSearchViaTransform(String modulation, String minimumFrequency, String maximumFrequency) throws JsonProcessingException {
 		logger.info("CAC search via Structured Query with Custom Transform: ");
+		
 		QueryManager queryMgr = client.newQueryManager();
 		StructuredQueryBuilder sqb = queryMgr.newStructuredQueryBuilder("cacOptions");
 		StructuredQueryDefinition modulationQuery = sqb.value(sqb.jsonProperty("modulation"), modulation);
@@ -170,6 +171,7 @@ public class MarkLogicService {
 				StructuredQueryBuilder.Operator.LE, maximumFrequency);
 		StructuredQueryDefinition nearQuery = sqb.near(2, 1, StructuredQueryBuilder.Ordering.UNORDERED, modulationQuery,
 				minimumFrequencyQuery, maximumFrequencyQuery);
+		
 		JacksonHandle searchResults = new JacksonHandle();
 		searchResults = queryMgr.search(nearQuery, searchResults);
 		JsonNode results = searchResults.get().get("results");
