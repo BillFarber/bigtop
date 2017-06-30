@@ -26,20 +26,19 @@ public class MarkLogicService {
 
 	private static final Logger logger = LoggerFactory.getLogger(MarkLogicService.class);
 
-	private static ObjectMapper mapper = new ObjectMapper();
 	private DatabaseClient client;
-	
+
 	public MarkLogicService(DatabaseClient client) {
 		this.client = client;
 	}
 
-    public List<String> readStateRegion(String uri) {
-        JSONDocumentManager jsonDocumentManager = client.newJSONDocumentManager();
-        JacksonHandle readHandle = new JacksonHandle();
-        readHandle = jsonDocumentManager.read(uri, readHandle);
-        JsonNode root = readHandle.get();
-        return root.findValuesAsText("region");
-    }
+	public List<String> readStateRegion(String uri) {
+		JSONDocumentManager jsonDocumentManager = client.newJSONDocumentManager();
+		JacksonHandle readHandle = new JacksonHandle();
+		readHandle = jsonDocumentManager.read(uri, readHandle);
+		JsonNode root = readHandle.get();
+		return root.findValuesAsText("region");
+	}
 
 	public Product getProduct(String uri) {
 		return readJacksonDocument(uri);
@@ -64,26 +63,19 @@ public class MarkLogicService {
 	}
 
 	public List<String> geoPointSearch(Float latitude, Float longitude) {
-		logger.info("Point search for: (" + latitude + "," + longitude + ")");
 		List<String> resultUris = new ArrayList<String>();
 		QueryManager queryMgr = client.newQueryManager();
 
 		StructuredQueryBuilder sqb = queryMgr.newStructuredQueryBuilder();
 		StructuredQueryDefinition query = sqb.geospatial(
-                sqb.geoRegionPath(
-                	sqb.pathIndex("//location/region"), 
-                    StructuredQueryBuilder.CoordinateSystem.WGS84
-                ),
-                GeospatialOperator.CONTAINS,
-                sqb.point(latitude, longitude)
-		);
+				sqb.geoRegionPath(sqb.pathIndex("//location/region"), StructuredQueryBuilder.CoordinateSystem.WGS84),
+				GeospatialOperator.CONTAINS, sqb.point(latitude, longitude));
 		JacksonHandle searchResults = new JacksonHandle();
 		searchResults = queryMgr.search(query, searchResults);
 		JsonNode results = searchResults.get().get("results");
 		Iterator<JsonNode> resultIterator = results.elements();
 		while (resultIterator.hasNext()) {
 			JsonNode result = resultIterator.next();
-			System.out.println(result.get("uri").asText());
 			resultUris.add(result.get("uri").asText());
 		}
 
@@ -91,26 +83,19 @@ public class MarkLogicService {
 	}
 
 	public List<String> geoBoxSearch(Float south, Float west, Float north, Float east) {
-		logger.info("Box search for: (" + south + "," + west + "," + north + "," + east + ")");
 		List<String> resultUris = new ArrayList<String>();
 		QueryManager queryMgr = client.newQueryManager();
 
 		StructuredQueryBuilder sqb = queryMgr.newStructuredQueryBuilder();
 		StructuredQueryDefinition query = sqb.geospatial(
-                sqb.geoRegionPath(
-                	sqb.pathIndex("//location/region"), 
-                    StructuredQueryBuilder.CoordinateSystem.WGS84
-                ),
-                GeospatialOperator.INTERSECTS,
-                sqb.box(south, west, north, east)
-		);
+				sqb.geoRegionPath(sqb.pathIndex("//location/region"), StructuredQueryBuilder.CoordinateSystem.WGS84),
+				GeospatialOperator.INTERSECTS, sqb.box(south, west, north, east));
 		JacksonHandle searchResults = new JacksonHandle();
 		searchResults = queryMgr.search(query, searchResults);
 		JsonNode results = searchResults.get().get("results");
 		Iterator<JsonNode> resultIterator = results.elements();
 		while (resultIterator.hasNext()) {
 			JsonNode result = resultIterator.next();
-			System.out.println(result.get("uri").asText());
 			resultUris.add(result.get("uri").asText());
 		}
 
@@ -118,32 +103,25 @@ public class MarkLogicService {
 	}
 
 	public List<String> geoPolygonSearch(Float[][] vertices) {
-		logger.info("Polygon search: ");
 		List<String> resultUris = new ArrayList<String>();
 		QueryManager queryMgr = client.newQueryManager();
 
 		StructuredQueryBuilder sqb = queryMgr.newStructuredQueryBuilder();
 		StructuredQueryDefinition query = sqb.geospatial(
-                sqb.geoRegionPath(
-                	sqb.pathIndex("//location/region"), 
-                    StructuredQueryBuilder.CoordinateSystem.WGS84
-                ),
-                GeospatialOperator.INTERSECTS,
-                createSQBPolygonFromVertices(sqb, vertices)
-		);
+				sqb.geoRegionPath(sqb.pathIndex("//location/region"), StructuredQueryBuilder.CoordinateSystem.WGS84),
+				GeospatialOperator.INTERSECTS, createSQBPolygonFromVertices(sqb, vertices));
 		JacksonHandle searchResults = new JacksonHandle();
 		searchResults = queryMgr.search(query, searchResults);
 		JsonNode results = searchResults.get().get("results");
 		Iterator<JsonNode> resultIterator = results.elements();
 		while (resultIterator.hasNext()) {
 			JsonNode result = resultIterator.next();
-			System.out.println(result.get("uri").asText());
 			resultUris.add(result.get("uri").asText());
 		}
 
 		return resultUris;
 	}
-	
+
 	private Polygon createSQBPolygonFromVertices(StructuredQueryBuilder sqb, Float[][] vertices) {
 		Point[] points = new Point[vertices.length];
 		for (int i = 0; i < vertices.length; i++) {
@@ -157,36 +135,17 @@ public class MarkLogicService {
 		return jsonDocumentManager.readAs(uri, Product.class);
 	}
 
-	public void prettyPrintJackson(JacksonHandle searchResults) {
-		try {
-			System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(searchResults.get()));
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
-		}
-	}
-
 	public List<String> geoDoublePolygonSearch(Float[][] verticesA, Float[][] verticesB) {
-		logger.info("Polygon search: ");
 		List<String> resultUris = new ArrayList<String>();
 		QueryManager queryMgr = client.newQueryManager();
 
 		StructuredQueryBuilder sqb = queryMgr.newStructuredQueryBuilder();
 		StructuredQueryDefinition queryA = sqb.geospatial(
-                sqb.geoRegionPath(
-                	sqb.pathIndex("//location/region"), 
-                    StructuredQueryBuilder.CoordinateSystem.WGS84
-                ),
-                GeospatialOperator.INTERSECTS,
-                createSQBPolygonFromVertices(sqb, verticesA)
-		);
+				sqb.geoRegionPath(sqb.pathIndex("//location/region"), StructuredQueryBuilder.CoordinateSystem.WGS84),
+				GeospatialOperator.INTERSECTS, createSQBPolygonFromVertices(sqb, verticesA));
 		StructuredQueryDefinition queryB = sqb.geospatial(
-                sqb.geoRegionPath(
-                	sqb.pathIndex("//location/region"), 
-                    StructuredQueryBuilder.CoordinateSystem.WGS84
-                ),
-                GeospatialOperator.INTERSECTS,
-                createSQBPolygonFromVertices(sqb, verticesB)
-		);
+				sqb.geoRegionPath(sqb.pathIndex("//location/region"), StructuredQueryBuilder.CoordinateSystem.WGS84),
+				GeospatialOperator.INTERSECTS, createSQBPolygonFromVertices(sqb, verticesB));
 		StructuredQueryDefinition andQuery = sqb.and(queryA, queryB);
 		JacksonHandle searchResults = new JacksonHandle();
 		searchResults = queryMgr.search(andQuery, searchResults);
@@ -194,10 +153,42 @@ public class MarkLogicService {
 		Iterator<JsonNode> resultIterator = results.elements();
 		while (resultIterator.hasNext()) {
 			JsonNode result = resultIterator.next();
-			System.out.println(result.get("uri").asText());
 			resultUris.add(result.get("uri").asText());
 		}
 
 		return resultUris;
+	}
+
+	public List<String> cacSearchViaTransform(String modulation, String minimumFrequency, String maximumFrequency) throws JsonProcessingException {
+		logger.info("CAC search via Structured Query with Custom Transform: ");
+		QueryManager queryMgr = client.newQueryManager();
+		StructuredQueryBuilder sqb = queryMgr.newStructuredQueryBuilder("cacOptions");
+		StructuredQueryDefinition modulationQuery = sqb.value(sqb.jsonProperty("modulation"), modulation);
+		StructuredQueryDefinition minimumFrequencyQuery = sqb.range(sqb.jsonProperty("freq"), "long",
+				StructuredQueryBuilder.Operator.GE, minimumFrequency);
+		StructuredQueryDefinition maximumFrequencyQuery = sqb.range(sqb.jsonProperty("freq"), "long",
+				StructuredQueryBuilder.Operator.LE, maximumFrequency);
+		StructuredQueryDefinition nearQuery = sqb.near(2, 1, StructuredQueryBuilder.Ordering.UNORDERED, modulationQuery,
+				minimumFrequencyQuery, maximumFrequencyQuery);
+		JacksonHandle searchResults = new JacksonHandle();
+		searchResults = queryMgr.search(nearQuery, searchResults);
+		JsonNode results = searchResults.get().get("results");
+		List<String> resultUris = new ArrayList<String>();
+		Iterator<JsonNode> resultIterator = results.elements();
+		ObjectMapper mapper = new ObjectMapper();
+		while (resultIterator.hasNext()) {
+			JsonNode result = resultIterator.next();
+			String matches = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(result.get("matches"));
+			resultUris.add(matches);
+		}
+		return resultUris;
+	}
+
+	public JsonNode cacSearchViaEndpoint(String modulation, String minimumFrequency, String maximumFrequency) throws JsonProcessingException {
+		logger.info("CAC search via custom endpoint: ");
+		CacSearchManager cacSearchManager = new CacSearchManager(client);
+		JsonNode results = cacSearchManager.cacSearch(modulation, minimumFrequency, maximumFrequency);
+
+		return results;
 	}
 }
