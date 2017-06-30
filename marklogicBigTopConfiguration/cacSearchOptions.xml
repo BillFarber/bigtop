@@ -1,0 +1,4 @@
+<search:options xmlns:search='http://marklogic.com/appservices/search'>
+	<search:search-option>filtered</search:search-option>
+    <search:transform-results apply="snippet" ns="http://com.marklogic.bigtop.cac" at="/transforms/transformCacResults.xqy"></search:transform-results>
+</search:options>
