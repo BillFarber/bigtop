@@ -34,7 +34,13 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 		LdapTemplate ldapTemplate = new LdapTemplate(contextSource);
 		Person person = getCurrentUser(ldapTemplate, username);
 
-		DatabaseClient mlClient = MarkLogicClientFactory.createMarkLogicClient(username, password);
+		DatabaseClient mlClient = null;
+		try {
+			mlClient = MarkLogicClientFactory.createMarkLogicClient(username, password);
+		} catch (Exception e) {
+			// Really need a handler here...
+			e.printStackTrace();
+		}
 
 		HttpSession session = request.getSession();
 		session.setAttribute("person", person);

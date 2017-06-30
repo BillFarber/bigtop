@@ -14,7 +14,7 @@ import com.markLogic.bigTop.middle.marklogic.domain.Product;
 import com.markLogic.bigTop.middle.properties.PropertiesHelper;
 import com.marklogic.client.DatabaseClient;
 import com.marklogic.client.DatabaseClientFactory;
-import com.marklogic.client.DatabaseClientFactory.Authentication;
+import com.marklogic.client.DatabaseClientFactory.SecurityContext;
 import com.marklogic.client.io.JacksonDatabindHandle;
 
 public class MarkLogicClientFactory {
@@ -23,18 +23,26 @@ public class MarkLogicClientFactory {
 	
     private static String ML_HOST;
     private static Integer ML_REST_PORT;
-    private static Authentication ML_AUTHENTICATION;
+    private static String ML_AUTHENTICATION;
     private final static SSLContext sslContext = BigTopSSLContextFactory.getBigTopSSLContext();
 
     private static ObjectMapper mapper = new ObjectMapper();
     
     private MarkLogicClientFactory() {}
 
-    public static DatabaseClient createMarkLogicClient(String username, String password) throws IOException {
+    public static DatabaseClient createMarkLogicClient(String username, String password) throws Exception {
     	DatabaseClient client = null;
     	if (getMarkLogicProperties()) {
     		DatabaseClientFactory.getHandleRegistry().register(JacksonDatabindHandle.newFactory(mapper, Product.class));
-    		client = DatabaseClientFactory.newClient(ML_HOST, ML_REST_PORT, username, password, ML_AUTHENTICATION, sslContext);
+    		SecurityContext securityContext = null;
+    		if (ML_AUTHENTICATION.equals("BASIC")) {
+    			securityContext = new DatabaseClientFactory.BasicAuthContext(username, password).withSSLContext(sslContext);
+    		} else if (ML_AUTHENTICATION.equals("DIGEST")) {
+    			securityContext = new DatabaseClientFactory.DigestAuthContext(username, password).withSSLContext(sslContext);
+    		} else {
+    			throw new Exception("MarkLogic Authentication type must be specified in marklogic.properties (BASIC or DIGEST)");
+    		}
+    		client = DatabaseClientFactory.newClient(ML_HOST, ML_REST_PORT, securityContext);
     		logger.info("Created MarkLogic client for " + username);
     	} else {
     		throw new IOException();
@@ -52,7 +60,7 @@ public class MarkLogicClientFactory {
 			properties.load(input);
 		    ML_HOST = properties.getProperty("host");
 		    ML_REST_PORT = Integer.valueOf(properties.getProperty("port"));
-			ML_AUTHENTICATION = Authentication.valueOf(properties.getProperty("authentication"));
+			ML_AUTHENTICATION = properties.getProperty("authentication");
 			success = true;
 		} catch (IOException ex) {
 			ex.printStackTrace();
