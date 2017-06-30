@@ -23,7 +23,12 @@ task fatJar(type: Jar) {
 	from { configurations.compile.collect { it.isDirectory() ? is : zipTree(it) } } 
 	with jar
  }
- 
+
+task createCACSamples(type: JavaExec) {
+  classpath sourceSets.main.runtimeClasspath
+  main = "com.markLogic.bigTop.cac.GenerateCACSamples"
+}
+
 run {
   args += '/Users/pbarber/Documents/workspaces/BigTop/ingestSampleData/src/main/resources/data/product/'
 }
@@ -38,6 +43,7 @@ targetCompatibility = 1.8
 // tag::security[]
 dependencies {
     compile group: 'com.marklogic', name: 'java-client-api', version: '3.0.7'
+	compile group: 'org.freemarker', name: 'freemarker', version: '2.3.26-incubating'
 }
 // end::security[]
 

@@ -14,7 +14,7 @@ bigtopadmin
 december
 
 -input_file_path
-src/main/resources/data/geo/CAC
+src/main/resources/data/geo/CAC/generated
 
 -output_permissions
 BigTopAdminRole,update,BigTopUsersRole,read
