@@ -174,6 +174,7 @@ public class MarkLogicService {
 		
 		JacksonHandle searchResults = new JacksonHandle();
 		searchResults = queryMgr.search(nearQuery, searchResults);
+		
 		JsonNode results = searchResults.get().get("results");
 		List<String> resultUris = new ArrayList<String>();
 		Iterator<JsonNode> resultIterator = results.elements();
