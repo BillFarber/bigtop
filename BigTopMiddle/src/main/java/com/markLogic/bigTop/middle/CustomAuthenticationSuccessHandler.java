@@ -39,17 +39,28 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 		HttpSession session = request.getSession();
 		session.setAttribute("person", person);
 		session.setAttribute("mlclient", mlClient);
-		
-		// For demo purposes, give the user a default DoubleEllipse.
-		// Massachusetts, Connecticut, Rhode Island, Vermont, New Hampshire, and Maine
+		addDefaultEllipseSearchData(session);
+		addDefaultCacSearchData(session);
+
+		response.setStatus(HttpServletResponse.SC_OK);
+		response.sendRedirect(".");
+	}
+	
+	// For demo purposes, give the user default values for the CAC search.
+	private void addDefaultCacSearchData(HttpSession session) {
+		session.setAttribute("modulation", "BPSK");
+		session.setAttribute("minimumFrequency", "1719272563");
+		session.setAttribute("maximumFrequency", "1740926229");
+	}
+	
+	// For demo purposes, give the user a default DoubleEllipse.
+	// Massachusetts, Connecticut, Rhode Island, Vermont, New Hampshire, and Maine
+	private void addDefaultEllipseSearchData(HttpSession session) {
 		Ellipse ellipseA = new Ellipse("42.25", "-71.3", "0.9", "1.8", "0");
 		// Massachusetts, Connecticut, and New York
 		Ellipse ellipseB = new Ellipse("41.5", "-73.2", "0.6", "1.2", "0");
 		DoubleEllipse doubleEllipse = new DoubleEllipse(ellipseA, ellipseB);
 		session.setAttribute("doubleEllipse", doubleEllipse);
-
-		response.setStatus(HttpServletResponse.SC_OK);
-		response.sendRedirect(".");
 	}
 
 	public Person getCurrentUser(LdapTemplate ldapTemplate, String uid) {
