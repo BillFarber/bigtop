@@ -12,6 +12,9 @@
 		<a href='doubleEllipseSearch'>Double Ellipse Search Page</a>
 	</div>
 	<div>
+		<a href='cacSearch'>CAC Search Page</a>
+	</div>
+	<div>
 		<a href='logout'>Logout</a>
 	</div>
 </div>
