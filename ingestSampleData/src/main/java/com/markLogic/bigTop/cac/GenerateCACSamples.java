@@ -28,8 +28,6 @@ public class GenerateCACSamples {
 		cfg.setDefaultEncoding("UTF-8");
 		cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
 		cfg.setLogTemplateExceptions(false);
-//		JsonAwareObjectWrapper wrapper = new JsonAwareObjectWrapper(cfg.getIncompatibleImprovements());
-//		cfg.setObjectWrapper(wrapper);
 		
 		Template template = cfg.getTemplate("CACEventTemplate.json");
 		Random random = new Random();
